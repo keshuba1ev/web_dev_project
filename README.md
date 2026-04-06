@@ -8,9 +8,7 @@ A comprehensive platform to browse, discover, and track your favorite Asian dram
 * **Backend**: A robust REST API powered by Python and Django REST Framework.
 
 ## Group Members
-* [Add Member 1 Name Here]
-* [Add Member 2 Name Here]
-* [Add Member 3 Name Here]
+* Keshubayev Abylay
 
 ## Getting Started
 
