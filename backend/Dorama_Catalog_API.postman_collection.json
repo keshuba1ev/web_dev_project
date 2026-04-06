@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "b304c5e3-c21e-450f-a3ff-ec13715ad0c0",
+		"name": "Dorama Catalog API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Doramas",
+			"item": [
+				{
+					"name": "List Doramas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/doramas/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"doramas",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Doramas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/doramas/filter/?query=love",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"doramas",
+								"filter",
+								""
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "love"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews (CRUD)",
+			"item": [
+				{
+					"name": "List Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reviews/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"reviews",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dorama\": 1,\n    \"rating\": 5,\n    \"comment\": \"Amazing!\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reviews/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"reviews",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dorama\": 1,\n    \"rating\": 4,\n    \"comment\": \"Actually, it's pretty good.\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reviews/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"reviews",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reviews/1/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"reviews",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "YOUR_TOKEN_HERE"
+		}
+	]
+}

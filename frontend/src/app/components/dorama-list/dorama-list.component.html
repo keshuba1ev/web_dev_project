@@ -1,0 +1,41 @@
+<div class="container">
+  <header>
+    <h1>Dorama Catalog</h1>
+    
+    @if (isAuth) {
+      <div class="user-info">
+        <span>Welcome, {{ username }}</span>
+        <button (click)="logout()" class="btn-logout">Logout</button>
+      </div>
+    } @else {
+      <button (click)="logout()" class="btn-login">Login</button>
+    }
+  </header>
+
+  <div class="actions">
+    <button (click)="loadDoramas()" class="btn-primary">Reload Doramas</button>
+    
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search doramas...">
+      <button (click)="filterDoramas()">Filter</button>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="error-msg">
+      Failed to fetch doramas: {{ errorMessage }}
+    </div>
+  }
+
+  <div class="dorama-grid">
+    @for (dorama of doramas; track dorama.id) {
+      <div class="dorama-card">
+        <h3>{{ dorama.title }} ({{ dorama.release_year }})</h3>
+        <span class="category">{{ dorama.category_name }}</span>
+        <p>{{ dorama.description }}</p>
+      </div>
+    } @empty {
+      <p>No doramas found.</p>
+    }
+  </div>
+</div>
