@@ -8,4 +8,6 @@ urlpatterns = [
     path('doramas/filter/', views.dorama_filter_view, name='dorama-filter'),
     path('reviews/', views.ReviewCRUDView.as_view(), name='review-list-create'),
     path('reviews/<int:pk>/', views.ReviewCRUDView.as_view(), name='review-detail'),
+    path('bookmarks/', views.BookmarkListCreateView.as_view(), name='bookmark-list-create'),
+    path('bookmarks/<int:pk>/', views.BookmarkDetailView.as_view(), name='bookmark-detail'),
 ]

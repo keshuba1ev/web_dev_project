@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Dorama, Review, Category
+from .models import Dorama, Review, Category, Bookmark
 from django.contrib.auth.models import User
 
 # ModelSerializers
@@ -13,7 +13,7 @@ class DoramaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dorama
-        fields = ['id', 'title', 'description', 'release_year', 'category', 'category_name']
+        fields = ['id', 'title', 'description', 'image_url', 'release_year', 'category', 'category_name', 'cast']
 
 class ReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.ReadOnlyField(source='user.username')
@@ -31,3 +31,12 @@ class LoginSerializer(serializers.Serializer):
 class DoramaFilterSerializer(serializers.Serializer):
     release_year = serializers.IntegerField(required=False)
     query = serializers.CharField(max_length=100, required=False)
+    category = serializers.IntegerField(required=False)
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    dorama_details = DoramaSerializer(source='dorama', read_only=True)
+
+    class Meta:
+        model = Bookmark
+        fields = ['id', 'user', 'dorama', 'dorama_details', 'status', 'created_at']
+        read_only_fields = ['user']

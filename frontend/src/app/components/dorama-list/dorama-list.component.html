@@ -1,41 +1,114 @@
-<div class="container">
-  <header>
-    <h1>Dorama Catalog</h1>
-    
-    @if (isAuth) {
-      <div class="user-info">
-        <span>Welcome, {{ username }}</span>
-        <button (click)="logout()" class="btn-logout">Logout</button>
+<div class="doramclub-layout">
+  <nav class="top-header">
+    <div class="header-container">
+      <div class="logo" routerLink="/" style="cursor: pointer;">
+        <span class="logo-icon">▶</span>
+        <h1>Doram<span class="highlight">Club</span></h1>
       </div>
-    } @else {
-      <button (click)="logout()" class="btn-login">Login</button>
-    }
-  </header>
-
-  <div class="actions">
-    <button (click)="loadDoramas()" class="btn-primary">Reload Doramas</button>
-    
-    <div class="search-box">
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Search doramas...">
-      <button (click)="filterDoramas()">Filter</button>
-    </div>
-  </div>
-
-  @if (errorMessage) {
-    <div class="error-msg">
-      Failed to fetch doramas: {{ errorMessage }}
-    </div>
-  }
-
-  <div class="dorama-grid">
-    @for (dorama of doramas; track dorama.id) {
-      <div class="dorama-card">
-        <h3>{{ dorama.title }} ({{ dorama.release_year }})</h3>
-        <span class="category">{{ dorama.category_name }}</span>
-        <p>{{ dorama.description }}</p>
+      
+      <div class="search-bar">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Поиск по сайту...">
+        <button class="btn-search" (click)="filterDoramas()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
       </div>
-    } @empty {
-      <p>No doramas found.</p>
-    }
-  </div>
+
+      <div class="user-menu">
+        <button class="btn-theme" (click)="catalogService.toggleTheme()">
+          {{ catalogService.isLightTheme ? '🌙 Темная' : '☀️ Светлая' }}
+        </button>
+        @if (isAuth) {
+          <a routerLink="/profile" class="username" style="text-decoration: none; font-weight: 600; cursor: pointer;">{{ username }}</a>
+          <button (click)="logout()" class="btn-icon">Выйти</button>
+        } @else {
+          <button (click)="logout()" class="btn-auth">Вход</button>
+        }
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-container">
+    <div class="content-wrapper">
+      
+      <!-- Filter Sidebar / Panel matching Doramclub style -->
+      <aside class="filter-panel">
+        <h3 class="filter-title">Жанры</h3>
+        
+        <ul class="genre-list">
+          <li>
+            <button class="genre-btn" [class.active]="!selectedCategoryId" (click)="selectCategory(undefined)">
+              Все дорамы
+            </button>
+          </li>
+          @for (category of categories; track category.id) {
+            <li>
+              <button class="genre-btn" [class.active]="selectedCategoryId === category.id" (click)="selectCategory(category.id)">
+                {{ category.name }}
+              </button>
+            </li>
+          }
+        </ul>
+      </aside>
+
+      <!-- Main Grid Area -->
+      <section class="grid-section">
+        <div class="section-header">
+          <h2>Список новинок</h2>
+        </div>
+        
+        @if (errorMessage) {
+          <div class="error-msg">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <div class="dorama-poster-grid">
+          @for (dorama of doramas; track dorama.id) {
+            <div class="poster-card" [routerLink]="['/doramas', dorama.id]">
+              <div class="poster-image">
+                <div class="poster-placeholder" [class.has-image]="!!dorama.image_url">
+                  @if (dorama.image_url) {
+                    <img [src]="dorama.image_url" alt="{{ dorama.title }}" class="poster-img">
+                  }
+                  <div class="status-badge" [class.completed]="dorama.id % 2 === 0" [class.ongoing]="dorama.id % 2 !== 0">
+                    {{ dorama.id % 2 === 0 ? 'Завершена' : 'Выходит' }}
+                  </div>
+                </div>
+              </div>
+              <div class="poster-info">
+                <h3 class="poster-title">{{ dorama.title }}</h3>
+                
+                <p class="poster-desc" title="{{ dorama.description }}">
+                  {{ dorama.description.length > 70 ? (dorama.description | slice:0:70) + '...' : dorama.description }}
+                </p>
+
+                <div class="poster-meta">
+                  <span class="meta-item year-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    {{ dorama.release_year }}
+                  </span>
+                  <span class="meta-item category-tag">
+                    {{ dorama.category_name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <p>Дорам не найдено</p>
+            </div>
+          }
+        </div>
+      </section>
+
+    </div>
+  </main>
 </div>

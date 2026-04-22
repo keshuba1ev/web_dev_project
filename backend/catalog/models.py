@@ -14,8 +14,10 @@ class DoramaManager(models.Manager):
 class Dorama(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
+    image_url = models.URLField(max_length=500, blank=True, null=True)
     release_year = models.IntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='doramas')
+    cast = models.JSONField(default=list, blank=True)
     
     objects = DoramaManager()
 
@@ -37,3 +39,21 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.user.username} on {self.dorama.title}"
+
+class Bookmark(models.Model):
+    STATUS_CHOICES = [
+        ('favorite', 'Избранное'),
+        ('watching', 'Смотрю'),
+        ('watched', 'Просмотрено'),
+        ('planned', 'В планах'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    dorama = models.ForeignKey(Dorama, on_delete=models.CASCADE, related_name='bookmarks')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planned')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'dorama')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.dorama.title} ({self.status})"

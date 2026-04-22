@@ -6,13 +6,14 @@ from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Dorama, Review, Category
+from .models import Dorama, Review, Category, Bookmark
 from .serializers import (
     DoramaSerializer, 
     ReviewSerializer, 
     LoginSerializer, 
     DoramaFilterSerializer,
-    CategorySerializer
+    CategorySerializer,
+    BookmarkSerializer
 )
 
 # 1. FBV (Function-Based View): Login
@@ -44,10 +45,13 @@ def dorama_filter_view(request):
         doramas = Dorama.objects.all()
         year = serializer.validated_data.get('release_year')
         query = serializer.validated_data.get('query')
+        category_id = serializer.validated_data.get('category')
         if year:
             doramas = doramas.filter(release_year=year)
         if query:
             doramas = doramas.filter(title__icontains=query)
+        if category_id:
+            doramas = doramas.filter(category_id=category_id)
         res_serializer = DoramaSerializer(doramas, many=True)
         return Response(res_serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -80,7 +84,13 @@ class ReviewCRUDView(APIView):
                 return Response(serializer.data)
             except Review.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-        reviews = Review.objects.all()
+        
+        dorama_id = request.query_params.get('dorama')
+        if dorama_id is not None:
+            reviews = Review.objects.filter(dorama_id=dorama_id)
+        else:
+            reviews = Review.objects.all()
+            
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
@@ -107,10 +117,44 @@ class ReviewCRUDView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE
-    def delete(self, request, pk):
+# 5. CBV: Bookmark CRUD
+class BookmarkListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        bookmarks = Bookmark.objects.filter(user=request.user)
+        serializer = BookmarkSerializer(bookmarks, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        dorama_id = request.data.get('dorama')
+        status_val = request.data.get('status', 'planned')
         try:
-            review = Review.objects.get(pk=pk, user=request.user)
-            review.delete()
+            dorama = Dorama.objects.get(id=dorama_id)
+        except Dorama.DoesNotExist:
+            return Response({"error": "Dorama not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        bookmark, created = Bookmark.objects.get_or_create(
+            user=request.user, 
+            dorama=dorama,
+            defaults={'status': status_val}
+        )
+        if not created:
+            bookmark.status = status_val
+            bookmark.save()
+
+        serializer = BookmarkSerializer(bookmark)
+        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class BookmarkDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        # We expect pk to be the dorama_id for easier frontend un-favoriting, or bookmark_id. Let's use dorama_id.
+        try:
+            bookmark = Bookmark.objects.get(dorama_id=pk, user=request.user)
+            bookmark.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except Review.DoesNotExist:
+        except Bookmark.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
