@@ -9,6 +9,7 @@ A comprehensive platform to browse, discover, and track your favorite Asian dram
 
 ## Group Members
 * Keshubayev Abylay
+* Aidarkhan Azamat
 
 ## Getting Started
 
